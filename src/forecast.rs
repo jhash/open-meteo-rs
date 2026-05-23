@@ -629,6 +629,34 @@ impl TryFrom<&str> for CellSelection {
 }
 
 api_param_enum! {
+    Minutely15Param,
+    invalid = InvalidMinutely15Param,
+    {
+        Temperature2m => "temperature_2m",
+        RelativeHumidity2m => "relative_humidity_2m",
+        DewPoint2m => "dew_point_2m",
+        ApparentTemperature => "apparent_temperature",
+        WindSpeed10m => "wind_speed_10m",
+        WindSpeed80m => "wind_speed_80m",
+        WindDirection10m => "wind_direction_10m",
+        WindDirection80m => "wind_direction_80m",
+        WindGusts10m => "wind_gusts_10m",
+        ShortwaveRadiation => "shortwave_radiation",
+        DirectRadiation => "direct_radiation",
+        DirectNormalIrradiance => "direct_normal_irradiance",
+        DiffuseRadiation => "diffuse_radiation",
+        GlobalTiltedIrradiance => "global_tilted_irradiance",
+        SunshineDuration => "sunshine_duration",
+        Precipitation => "precipitation",
+        Snowfall => "snowfall",
+        Rain => "rain",
+        Cape => "cape",
+        Visibility => "visibility",
+        WeatherCode => "weather_code",
+    }
+}
+
+api_param_enum! {
     HourlyParam,
     invalid = InvalidHourlyParam,
     {
@@ -730,7 +758,7 @@ pub struct Options {
     pub location: location::Location,
     pub elevation: Option<Elevation>,
     /// Attributes to request for `minutely_15` forecast
-    pub minutely_15: Vec<String>,
+    pub minutely_15: Vec<Minutely15Param>,
     /// Attributes to request in hourly intervals
     pub hourly: Vec<HourlyParam>,
     /// Attributes to request in daily intervals
@@ -1187,8 +1215,8 @@ mod tests {
 
         opts.elevation = Some("nan".try_into().unwrap());
 
-        opts.minutely_15.push("temperature_2m".into());
-        opts.minutely_15.push("windspeed_10m".into());
+        opts.minutely_15.push(Minutely15Param::Temperature2m);
+        opts.minutely_15.push(Minutely15Param::WindSpeed10m);
         opts.hourly.push(HourlyParam::Temperature2m);
         opts.hourly.push(HourlyParam::WindSpeed80m);
         opts.daily.push(DailyParam::Temperature2mMax);
