@@ -630,6 +630,7 @@ impl TryFrom<&str> for CellSelection {
 
 api_param_enum! {
     HourlyVariable,
+    invalid = InvalidHourlyVariable,
     {
         Rain => "rain",
         Temperature2m => "temperature_2m",                  // Air temperature at 2 meters above ground

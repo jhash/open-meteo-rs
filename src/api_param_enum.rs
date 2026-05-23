@@ -2,6 +2,7 @@ macro_rules! api_param_enum {
   (
       $(#[$meta:meta])*
       $enum_name:ident,
+      invalid = $invalid_variant:ident,
       { $($variant:ident => $str:literal),+ $(,)? }
   ) => {
       $(#[$meta])*
@@ -22,6 +23,18 @@ macro_rules! api_param_enum {
           fn from(value: $enum_name) -> Self {
               value.to_string()
           }
+      }
+
+      impl TryFrom<&str> for $enum_name {
+        type Error = crate::ConversionError;
+        fn try_from(value: &str) -> Result<Self, Self::Error> {
+            match value {
+                $($str => Ok(Self::$variant),)+
+                _ => Err(crate::ConversionError::$invalid_variant {
+                    name: value.to_string(),
+                }),
+            }
+        }
       }
 
       impl $enum_name {

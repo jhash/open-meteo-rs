@@ -76,7 +76,7 @@ async fn main() {
         .push(open_meteo_rs::forecast::HourlyVariable::Temperature2m);
     opts.hourly
         .push(open_meteo_rs::forecast::HourlyVariable::Rain);
-    // opts.hourly.push("snowfall".into());
+    opts.hourly.push("snowfall".try_into().unwrap());
     // ...
 
     // Daily parameters
