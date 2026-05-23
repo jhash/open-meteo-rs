@@ -82,7 +82,8 @@ async fn main() {
     opts.cell_selection = Some("nearest".try_into().unwrap());
 
     // Current weather
-    opts.current.push("temperature_2m".into());
+    opts.current.push(open_meteo_rs::forecast::CurrentParam::Temperature2m);
+    opts.current.push("is_day".try_into().unwrap());
 
     // Hourly parameters
     opts.hourly.push(open_meteo_rs::forecast::HourlyParam::Temperature2m);
