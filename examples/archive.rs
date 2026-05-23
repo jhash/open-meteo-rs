@@ -4,7 +4,7 @@ use chrono::{TimeZone, Utc};
 async fn main() {
     let client = open_meteo_rs::Client::new();
     let options = open_meteo_rs::forecast::Options {
-        hourly: vec![open_meteo_rs::forecast::HourlyVariable::Temperature2m],
+        hourly: vec![open_meteo_rs::forecast::HourlyParam::Temperature2m],
         start_date: Some(
             Utc.with_ymd_and_hms(2023, 5, 1, 0, 0, 0)
                 .unwrap()

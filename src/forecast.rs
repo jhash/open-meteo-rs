@@ -629,8 +629,8 @@ impl TryFrom<&str> for CellSelection {
 }
 
 api_param_enum! {
-    HourlyVariable,
-    invalid = InvalidHourlyVariable,
+    HourlyParam,
+    invalid = InvalidHourlyParam,
     {
         Rain => "rain",
         Temperature2m => "temperature_2m",                  // Air temperature at 2 meters above ground
@@ -677,6 +677,32 @@ api_param_enum! {
     }
 }
 
+api_param_enum! {
+    DailyParam,
+    invalid = InvalidDailyParam,
+    {
+        Temperature2mMax => "temperature_2m_max",
+        Temperature2mMin => "temperature_2m_min",
+        ApparentTemperatureMax => "apparent_temperature_max",
+        ApparentTemperatureMin => "apparent_temperature_min",
+        PrecipitationSum => "precipitation_sum",
+        SnowfallSum => "snowfall_sum",
+        PrecipitationHours => "precipitation_hours",
+        PrecipitationProbabilityMax => "precipitation_probability_max",
+        PrecipitationProbabilityMin => "precipitation_probability_min",
+        PrecipitationProbabilityMean => "precipitation_probability_mean",
+        Sunrise => "sunrise",
+        Sunset => "sunset",
+        SunshineDuration => "sunshine_duration",
+        DaylightDuration => "daylight_duration",
+        WindSpeed10mMax => "wind_speed_10m_max",
+        WindGusts10mMax => "wind_gusts_10m_max",
+        WindDirection10mDominant => "wind_direction_10m_dominant",
+        ShortwaveRadiationSum => "shortwave_radiation_sum",
+        Et0FaoEvapotranspiration => "et0_fao_evapotranspiration",
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Options {
     pub location: location::Location,
@@ -684,9 +710,9 @@ pub struct Options {
     /// Attributes to request for `minutely_15` forecast
     pub minutely_15: Vec<String>,
     /// Attributes to request in hourly intervals
-    pub hourly: Vec<HourlyVariable>,
+    pub hourly: Vec<HourlyParam>,
     /// Attributes to request in daily intervals
-    pub daily: Vec<String>,
+    pub daily: Vec<DailyParam>,
     /// Attributes to request for current weather
     pub current: Vec<String>,
     pub temperature_unit: Option<TemperatureUnit>,
@@ -1141,10 +1167,10 @@ mod tests {
 
         opts.minutely_15.push("temperature_2m".into());
         opts.minutely_15.push("windspeed_10m".into());
-        opts.hourly.push(HourlyVariable::Temperature2m);
-        opts.hourly.push(HourlyVariable::WindSpeed80m);
-        opts.daily.push("temperature_2m_max".into());
-        opts.daily.push("shortwave_radiation_sum".into());
+        opts.hourly.push(HourlyParam::Temperature2m);
+        opts.hourly.push(HourlyParam::WindSpeed80m);
+        opts.daily.push(DailyParam::Temperature2mMax);
+        opts.daily.push(DailyParam::ShortwaveRadiationSum);
         opts.time_zone = Some(chrono_tz::Tz::Europe__Paris.to_string());
 
         opts.start_date = Some(chrono::Utc::now().date_naive());
@@ -1166,7 +1192,7 @@ mod tests {
             ..Default::default()
         };
 
-        opts.hourly.push(HourlyVariable::Temperature2m);
+        opts.hourly.push(HourlyParam::Temperature2m);
 
         let opts_two = opts.clone();
         let fut_one = clt.forecast(opts);

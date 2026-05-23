@@ -85,13 +85,13 @@ async fn main() {
     opts.current.push("temperature_2m".into());
 
     // Hourly parameters
-    opts.hourly.push(open_meteo_rs::forecast::HourlyVariable::Temperature2m);
-    opts.hourly.push("snowfall".into());
+    opts.hourly.push(open_meteo_rs::forecast::HourlyParam::Temperature2m);
+    opts.hourly.push("snowfall".try_into().unwrap());
     // ...
 
     // Daily parameters
-    opts.daily.push("temperature_2m_max".into());
-    opts.daily.push("snowfall_sum".into());
+    opts.daily.push(open_meteo_rs::forecast::DailyParam::Temperature2mMax);
+    opts.daily.push("snowfall_sum".try_into().unwrap());
 
     let res = client.forecast(opts).await.unwrap();
 
