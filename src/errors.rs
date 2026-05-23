@@ -34,4 +34,7 @@ pub enum ConversionError {
 
     #[snafu(display("Invalid current param '{name}'"))]
     InvalidCurrentParam { name: String },
+
+    #[snafu(display("Invalid minutely_15 param '{name}'"))]
+    InvalidMinutely15Param { name: String },
 }

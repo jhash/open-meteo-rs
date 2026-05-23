@@ -81,6 +81,13 @@ async fn main() {
     opts.cell_selection = Some("sea".try_into().unwrap()); // or
     opts.cell_selection = Some("nearest".try_into().unwrap());
 
+    // 15-minutely parameters (native HRRR in North America; interpolated elsewhere)
+    opts.minutely_15.push(open_meteo_rs::forecast::Minutely15Param::Temperature2m);
+    opts.minutely_15.push(open_meteo_rs::forecast::Minutely15Param::Precipitation);
+    opts.minutely_15.push("rain".try_into().unwrap());
+    // opts.forecast_minutely_15 = Some(96); // max 1536 data points
+    // ...
+
     // Current weather
     opts.current.push(open_meteo_rs::forecast::CurrentParam::Temperature2m);
     opts.current.push("is_day".try_into().unwrap());
