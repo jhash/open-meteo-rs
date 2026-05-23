@@ -628,6 +628,55 @@ impl TryFrom<&str> for CellSelection {
     }
 }
 
+api_param_enum! {
+    HourlyVariable,
+    invalid = InvalidHourlyVariable,
+    {
+        Rain => "rain",
+        Temperature2m => "temperature_2m",                  // Air temperature at 2 meters above ground
+        RelativeHumidity2m => "relative_humidity_2m",       // Relative humidity at 2 meters above ground
+        DewPoint2m => "dew_point_2m",                       // Dew point temperature at 2 meters above ground
+        ApparentTemperature => "apparent_temperature",       // Apparent temperature (feels-like)
+        PressureMsl => "pressure_msl",                      // Atmospheric pressure at mean sea level
+        SurfacePressure => "surface_pressure",               // Surface atmospheric pressure
+        CloudCover => "cloud_cover",                         // Total cloud cover
+        CloudCoverLow => "cloud_cover_low",                  // Low level clouds/fog up to 3km
+        CloudCoverMid => "cloud_cover_mid",                  // Mid level clouds 3-8km
+        CloudCoverHigh => "cloud_cover_high",                // High level clouds above 8km
+        WindSpeed10m => "wind_speed_10m",                    // Wind speed at 10 meters
+        WindSpeed80m => "wind_speed_80m",                    // Wind speed at 80 meters
+        WindDirection10m => "wind_direction_10m",            // Wind direction at 10 meters
+        WindDirection80m => "wind_direction_80m",            // Wind direction at 80 meters
+        WindGusts10m => "wind_gusts_10m",                    // Gusts at 10 meters, preceding hour max
+        ShortwaveRadiation => "shortwave_radiation",         // Shortwave solar radiation, preceding hour mean
+        DirectRadiation => "direct_radiation",               // Direct solar radiation, preceding hour mean
+        DirectNormalIrradiance => "direct_normal_irradiance",// Direct normal irradiance, preceding hour mean
+        DiffuseRadiation => "diffuse_radiation",             // Diffuse solar radiation, preceding hour mean
+        GlobalTiltedIrradiance => "global_tilted_irradiance",// Global tilted irradiance, preceding hour mean
+        SunshineDuration => "sunshine_duration",             // Sunshine duration, preceding hour sum
+        VapourPressureDeficit => "vapour_pressure_deficit",  // Vapor Pressure Deficit (VPD)
+        Evapotranspiration => "evapotranspiration",          // Evapotranspiration, preceding hour sum
+        Et0FaoEvapotranspiration => "et0_fao_evapotranspiration", // Reference evapotranspiration, preceding hour sum
+        WeatherCode => "weather_code",                       // WMO weather code
+        Precipitation => "precipitation",                    // Total precipitation, preceding hour sum
+        Snowfall => "snowfall",                              // Snowfall, preceding hour sum
+        PrecipitationProbability => "precipitation_probability", // Probability of precipitation, preceding hour
+        SnowDepth => "snow_depth",                           // Snow depth on ground
+        FreezingLevelHeight => "freezing_level_height",      // 0°C altitude above sea level
+        Visibility => "visibility",                          // Viewing distance in meters
+        Cape => "cape",                                      // Convective available potential energy
+        LiftedIndex => "lifted_index",                       // Atmospheric stability
+        SoilTemperature0To10cm => "soil_temperature_0_to_10cm",         // Soil temp 0-10cm
+        SoilTemperature10To40cm => "soil_temperature_10_to_40cm",       // Soil temp 10-40cm
+        SoilTemperature40To100cm => "soil_temperature_40_to_100cm",     // Soil temp 40-100cm
+        SoilTemperature100To200cm => "soil_temperature_100_to_200cm",   // Soil temp 100-200cm
+        SoilMoisture0To10cm => "soil_moisture_0_to_10cm",               // Soil moisture 0-10cm
+        SoilMoisture10To40cm => "soil_moisture_10_to_40cm",             // Soil moisture 10-40cm
+        SoilMoisture40To100cm => "soil_moisture_40_to_100cm",           // Soil moisture 40-100cm
+        SoilMoisture100To200cm => "soil_moisture_100_to_200cm",         // Soil moisture 100-200cm
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Options {
     pub location: location::Location,
@@ -635,7 +684,7 @@ pub struct Options {
     /// Attributes to request for `minutely_15` forecast
     pub minutely_15: Vec<String>,
     /// Attributes to request in hourly intervals
-    pub hourly: Vec<String>,
+    pub hourly: Vec<HourlyVariable>,
     /// Attributes to request in daily intervals
     pub daily: Vec<String>,
     /// Attributes to request for current weather
@@ -1092,8 +1141,8 @@ mod tests {
 
         opts.minutely_15.push("temperature_2m".into());
         opts.minutely_15.push("windspeed_10m".into());
-        opts.hourly.push("temperature_2m".into());
-        opts.hourly.push("windspeed_120m".into());
+        opts.hourly.push(HourlyVariable::Temperature2m);
+        opts.hourly.push(HourlyVariable::WindSpeed80m);
         opts.daily.push("temperature_2m_max".into());
         opts.daily.push("shortwave_radiation_sum".into());
         opts.time_zone = Some(chrono_tz::Tz::Europe__Paris.to_string());
@@ -1117,7 +1166,7 @@ mod tests {
             ..Default::default()
         };
 
-        opts.hourly.push("temperature_2m".into());
+        opts.hourly.push(HourlyVariable::Temperature2m);
 
         let opts_two = opts.clone();
         let fut_one = clt.forecast(opts);

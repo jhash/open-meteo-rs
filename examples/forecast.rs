@@ -7,8 +7,8 @@ async fn main() {
 
     // Location
     opts.location = open_meteo_rs::Location {
-        lat: 48.864716,
-        lng: 2.349014,
+        lat: 40.74789069943684,
+        lng: -73.9156010339563,
     };
 
     // Elevation
@@ -21,7 +21,7 @@ async fn main() {
     opts.temperature_unit = Some(open_meteo_rs::forecast::TemperatureUnit::Fahrenheit); // or
     opts.temperature_unit = Some(open_meteo_rs::forecast::TemperatureUnit::Celsius); // or
     opts.temperature_unit = Some("fahrenheit".try_into().unwrap()); // or
-    opts.temperature_unit = Some("celsius".try_into().unwrap()); // or
+                                                                    // opts.temperature_unit = Some("celsius".try_into().unwrap()); // or
 
     // Wind speed unit
     opts.wind_speed_unit = Some(open_meteo_rs::forecast::WindSpeedUnit::Kmh); // or
@@ -72,13 +72,17 @@ async fn main() {
     opts.current.push("is_day".into());
 
     // Hourly parameters
-    opts.hourly.push("temperature_2m".into());
-    opts.hourly.push("snowfall".into());
+    opts.hourly
+        .push(open_meteo_rs::forecast::HourlyVariable::Temperature2m);
+    opts.hourly
+        .push(open_meteo_rs::forecast::HourlyVariable::Rain);
+    opts.hourly.push("snowfall".try_into().unwrap());
     // ...
 
     // Daily parameters
     opts.daily.push("temperature_2m_max".into());
-    opts.daily.push("snowfall_sum".into());
+    opts.daily.push("rain_sum".into());
+    // opts.daily.push("snowfall_sum".into());
 
     let res = client.forecast(opts).await.unwrap();
 

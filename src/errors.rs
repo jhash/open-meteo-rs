@@ -25,4 +25,7 @@ pub enum ConversionError {
 
     #[snafu(display("Invalid cell selection '{selection}'"))]
     InvalidCellSelection { selection: String },
+
+    #[snafu(display("Invalid hourly variable '{name}'"))]
+    InvalidHourlyVariable { name: String },
 }
