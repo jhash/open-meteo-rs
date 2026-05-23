@@ -85,7 +85,7 @@ async fn main() {
     opts.current.push("temperature_2m".into());
 
     // Hourly parameters
-    opts.hourly.push("temperature_2m".into());
+    opts.hourly.push(open_meteo_rs::forecast::HourlyVariable::Temperature2m);
     opts.hourly.push("snowfall".into());
     // ...
 

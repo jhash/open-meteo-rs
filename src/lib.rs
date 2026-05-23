@@ -4,6 +4,9 @@ mod client;
 mod errors;
 mod location;
 
+#[macro_use]
+mod api_param_enum;
+
 pub mod air_quality;
 pub mod forecast;
 pub mod geocoding;
