@@ -31,4 +31,7 @@ pub enum ConversionError {
 
     #[snafu(display("Invalid daily param '{name}'"))]
     InvalidDailyParam { name: String },
+
+    #[snafu(display("Invalid current param '{name}'"))]
+    InvalidCurrentParam { name: String },
 }

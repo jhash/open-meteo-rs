@@ -703,6 +703,28 @@ api_param_enum! {
     }
 }
 
+api_param_enum! {
+    CurrentParam,
+    invalid = InvalidCurrentParam,
+    {
+        Temperature2m => "temperature_2m",
+        RelativeHumidity2m => "relative_humidity_2m",
+        ApparentTemperature => "apparent_temperature",
+        IsDayOrNight => "is_day",
+        WindSpeed10m => "wind_speed_10m",
+        WindDirection10m => "wind_direction_10m",
+        WindGusts10m => "wind_gusts_10m",
+        Precipitation => "precipitation",
+        Rain => "rain",
+        Showers => "showers",
+        Snowfall => "snowfall",
+        WeatherCode => "weather_code",
+        CloudCover => "cloud_cover",
+        PressureMsl => "pressure_msl",
+        SurfacePressure => "surface_pressure",
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Options {
     pub location: location::Location,
@@ -714,7 +736,7 @@ pub struct Options {
     /// Attributes to request in daily intervals
     pub daily: Vec<DailyParam>,
     /// Attributes to request for current weather
-    pub current: Vec<String>,
+    pub current: Vec<CurrentParam>,
     pub temperature_unit: Option<TemperatureUnit>,
     pub wind_speed_unit: Option<WindSpeedUnit>,
     pub precipitation_unit: Option<PrecipitationUnit>,
@@ -1158,7 +1180,7 @@ mod tests {
                 lat: 52.52,
                 lng: 13.41,
             },
-            current: vec!["temperature_2m".into()],
+            current: vec![CurrentParam::Temperature2m],
             elevation: Some(8.65.into()),
             ..Default::default()
         };
