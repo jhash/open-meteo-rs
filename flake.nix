@@ -23,10 +23,10 @@
 
         devShell = craneLib.devShell {
           packages = with pkgs; [
+            cargo-deny
             clippy
+            rustfmt
             rust-analyzer
-            openssl
-            pkg-config
             dprint
             gnumake
           ];
