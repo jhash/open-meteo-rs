@@ -1,24 +1,31 @@
-use chrono::{TimeZone, Utc};
+use open_meteo_rs::forecast::{DailyParam, HourlyParam, Options};
+use open_meteo_rs::jiff::civil::date;
+use open_meteo_rs::{Client, Error};
 
 #[tokio::main]
-async fn main() {
-    let client = open_meteo_rs::Client::new();
-    let options = open_meteo_rs::forecast::Options {
-        hourly: vec![open_meteo_rs::forecast::HourlyParam::Temperature2m],
-        start_date: Some(
-            Utc.with_ymd_and_hms(2023, 5, 1, 0, 0, 0)
-                .unwrap()
-                .date_naive(),
-        ),
-        end_date: Some(
-            Utc.with_ymd_and_hms(2023, 5, 2, 0, 0, 0)
-                .unwrap()
-                .date_naive(),
-        ),
-        ..Default::default()
+async fn main() -> Result<(), Error> {
+    let client = Client::new()?;
+    let opts = Options {
+        hourly: vec![HourlyParam::Temperature2m],
+        daily: vec![DailyParam::Temperature2mMean, DailyParam::PrecipitationSum],
+        time_zone: Some("Europe/Berlin".to_owned()),
+        start_date: Some(date(2023, 5, 1)),
+        end_date: Some(date(2023, 5, 2)),
+        ..Options::default()
     };
 
-    let response = client.archive(options).await.unwrap();
+    let result = client.archive(opts).await?;
+    if let Some(daily) = &result.daily {
+        let means = daily.get(DailyParam::Temperature2mMean).unwrap_or_default();
+        for (day, mean) in daily.time().iter().zip(means) {
+            println!(
+                "{day}: {mean:?} {}",
+                daily
+                    .unit(DailyParam::Temperature2mMean)
+                    .unwrap_or_default()
+            );
+        }
+    }
 
-    dbg!(response);
+    Ok(())
 }

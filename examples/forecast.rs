@@ -1,102 +1,78 @@
-#![allow(clippy::field_reassign_with_default)]
+use open_meteo_rs::forecast::{
+    CellSelection, CurrentParam, DailyParam, Elevation, HourlyParam, Minutely15Param, Options,
+    PrecipitationUnit, TemperatureUnit, WindSpeedUnit,
+};
+use open_meteo_rs::{Client, Location};
 
 #[tokio::main]
-async fn main() {
-    let client = open_meteo_rs::Client::new();
-    let mut opts = open_meteo_rs::forecast::Options::default();
-
-    // Location
-    opts.location = open_meteo_rs::Location {
-        lat: 40.74789069943684,
-        lng: -73.9156010339563,
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let client = Client::new()?;
+    let opts = Options {
+        location: Location {
+            lat: 40.747_89,
+            lng: -73.915_6,
+        },
+        elevation: Some(Elevation::Nan),
+        temperature_unit: Some(TemperatureUnit::Fahrenheit),
+        wind_speed_unit: Some(WindSpeedUnit::Mph),
+        precipitation_unit: Some(PrecipitationUnit::Inches),
+        time_zone: Some("auto".to_owned()),
+        forecast_days: Some(2),
+        cell_selection: Some(CellSelection::Land),
+        current: vec![CurrentParam::Temperature2m, "is_day".try_into()?],
+        minutely_15: vec![
+            Minutely15Param::Temperature2m,
+            Minutely15Param::Precipitation,
+        ],
+        forecast_minutely_15: Some(8),
+        hourly: vec![
+            HourlyParam::Temperature2m,
+            HourlyParam::Rain,
+            "snowfall".try_into()?,
+        ],
+        daily: vec![
+            DailyParam::Temperature2mMax,
+            DailyParam::Sunrise,
+            DailyParam::Sunset,
+        ],
+        ..Options::default()
     };
 
-    // Elevation
-    opts.elevation = Some(open_meteo_rs::forecast::Elevation::Nan); // or
-    opts.elevation = Some(open_meteo_rs::forecast::Elevation::Value(150.9)); // or
-    opts.elevation = Some("nan".try_into().unwrap()); // or
-    opts.elevation = Some(150.9.into());
+    let result = client.forecast(opts).await?;
+    let offset = result.meta.offset();
+    println!(
+        "{} ({}s from UTC)",
+        result.meta.timezone, result.meta.utc_offset_seconds
+    );
 
-    // Temperature unit
-    opts.temperature_unit = Some(open_meteo_rs::forecast::TemperatureUnit::Fahrenheit); // or
-    opts.temperature_unit = Some(open_meteo_rs::forecast::TemperatureUnit::Celsius); // or
-    opts.temperature_unit = Some("fahrenheit".try_into().unwrap()); // or
-                                                                    // opts.temperature_unit = Some("celsius".try_into().unwrap()); // or
+    if let Some(current) = &result.current {
+        println!(
+            "now: {:?} {}",
+            current.get(CurrentParam::Temperature2m),
+            current
+                .unit(CurrentParam::Temperature2m)
+                .unwrap_or_default()
+        );
+    }
 
-    // Wind speed unit
-    opts.wind_speed_unit = Some(open_meteo_rs::forecast::WindSpeedUnit::Kmh); // or
-    opts.wind_speed_unit = Some(open_meteo_rs::forecast::WindSpeedUnit::Ms); // or
-    opts.wind_speed_unit = Some(open_meteo_rs::forecast::WindSpeedUnit::Mph); // or
-    opts.wind_speed_unit = Some(open_meteo_rs::forecast::WindSpeedUnit::Kn); // or
-    opts.wind_speed_unit = Some("kmh".try_into().unwrap()); // or
-    opts.wind_speed_unit = Some("ms".try_into().unwrap()); // or
-    opts.wind_speed_unit = Some("mph".try_into().unwrap()); // or
-    opts.wind_speed_unit = Some("kn".try_into().unwrap());
+    if let Some(minutely) = &result.minutely_15 {
+        let temperatures = minutely
+            .get(Minutely15Param::Temperature2m)
+            .unwrap_or_default();
+        for (time, temperature) in minutely.time().iter().zip(temperatures) {
+            println!(
+                "{} {temperature:?}",
+                time.to_zoned(offset.to_time_zone()).datetime()
+            );
+        }
+    }
 
-    // Precipitation unit
-    opts.precipitation_unit = Some(open_meteo_rs::forecast::PrecipitationUnit::Millimeters); // or
-    opts.precipitation_unit = Some(open_meteo_rs::forecast::PrecipitationUnit::Inches); // or
-    opts.precipitation_unit = Some("mm".try_into().unwrap()); // or
-    opts.precipitation_unit = Some("inch".try_into().unwrap()); // or
+    if let Some(daily) = &result.daily {
+        let sunrises = daily.instants(DailyParam::Sunrise).unwrap_or_default();
+        for (day, sunrise) in daily.time().iter().zip(sunrises) {
+            println!("{day}: sunrise at {sunrise:?}");
+        }
+    }
 
-    // Time zone (default to UTC)
-    opts.time_zone = Some(chrono_tz::Europe::Paris.name().into());
-
-    // Past days (0-2)
-    // opts.past_days = Some(2); // !! mutually exclusive with dates
-
-    // Forecast days (0-16)
-    // opts.forecast_days = Some(2); // !! mutually exclusive with dates
-
-    // Dates
-    let start_date = chrono::Utc::now()
-        .with_timezone(&chrono_tz::Europe::Paris)
-        .naive_local()
-        .date();
-    opts.start_date = Some(start_date);
-    opts.end_date = Some(start_date + chrono::Duration::days(2));
-
-    // Models
-    // opts.models = Some(vec!["auto".into()]); // Crash on server side
-
-    // Cell selection
-    opts.cell_selection = Some(open_meteo_rs::forecast::CellSelection::Land); // or
-    opts.cell_selection = Some(open_meteo_rs::forecast::CellSelection::Sea); // or
-    opts.cell_selection = Some(open_meteo_rs::forecast::CellSelection::Nearest); // or
-    opts.cell_selection = Some("land".try_into().unwrap()); // or
-    opts.cell_selection = Some("sea".try_into().unwrap()); // or
-    opts.cell_selection = Some("nearest".try_into().unwrap());
-
-    // 15-minutely parameters (native HRRR in North America; interpolated elsewhere)
-    opts.minutely_15
-        .push(open_meteo_rs::forecast::Minutely15Param::Temperature2m);
-    opts.minutely_15
-        .push(open_meteo_rs::forecast::Minutely15Param::Precipitation);
-    opts.minutely_15.push("rain".try_into().unwrap());
-    // opts.forecast_minutely_15 = Some(96); // max 1536 data points
-    // ...
-
-    // Current weather
-    opts.current
-        .push(open_meteo_rs::forecast::CurrentParam::Temperature2m);
-    opts.current.push("is_day".try_into().unwrap());
-
-    // Hourly parameters
-    opts.hourly
-        .push(open_meteo_rs::forecast::HourlyParam::Temperature2m);
-    opts.hourly
-        .push(open_meteo_rs::forecast::HourlyParam::Rain);
-    opts.hourly.push("snowfall".try_into().unwrap());
-    // ...
-
-    // Daily parameters
-    opts.daily
-        .push(open_meteo_rs::forecast::DailyParam::Temperature2mMax);
-    opts.daily
-        .push(open_meteo_rs::forecast::DailyParam::PrecipitationSum);
-    opts.daily.push("snowfall_sum".try_into().unwrap());
-
-    let res = client.forecast(opts).await.unwrap();
-
-    println!("{:#?}", res);
+    Ok(())
 }
