@@ -1,0 +1,47 @@
+{
+  "latitude": -36.871704,
+  "longitude": 174.78947,
+  "generationtime_ms": 0.12,
+  "utc_offset_seconds": 43200,
+  "timezone": "Pacific/Auckland",
+  "timezone_abbreviation": "GMT+12",
+  "elevation": 35.0,
+  "current_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "temperature_2m": "°C",
+    "relative_humidity_2m": "%",
+    "weather_code": "wmo code",
+    "is_day": ""
+  },
+  "current": {
+    "time": "2026-09-26T21:45",
+    "interval": 900,
+    "temperature_2m": 11.0,
+    "relative_humidity_2m": 91,
+    "weather_code": 61,
+    "is_day": 0
+  },
+  "hourly_units": {
+    "time": "iso8601",
+    "temperature_2m": "°C",
+    "precipitation_probability": "%"
+  },
+  "hourly": {
+    "time": ["2026-09-27T01:00", "2026-09-27T02:00", "2026-09-27T03:00", "2026-09-27T04:00"],
+    "temperature_2m": [10.9, 10.3, 9.2, null],
+    "precipitation_probability": [40, 35, null, 10]
+  },
+  "daily_units": {
+    "time": "iso8601",
+    "temperature_2m_max": "°C",
+    "sunrise": "iso8601",
+    "sunset": "iso8601"
+  },
+  "daily": {
+    "time": ["2026-09-26", "2026-09-27"],
+    "temperature_2m_max": [15.6, 16.0],
+    "sunrise": ["2026-09-26T06:05", "2026-09-27T06:03"],
+    "sunset": ["2026-09-26T18:25", null]
+  }
+}

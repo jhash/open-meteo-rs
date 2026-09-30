@@ -1,0 +1,19 @@
+{
+  "latitude": 52.52,
+  "longitude": 13.419998,
+  "generationtime_ms": 0.5,
+  "utc_offset_seconds": 0,
+  "timezone": "GMT",
+  "timezone_abbreviation": "GMT",
+  "elevation": 38.0,
+  "hourly_units": {
+    "time": "iso8601",
+    "temperature_2m_icon_seamless": "°C",
+    "temperature_2m_gfs_seamless": "°C"
+  },
+  "hourly": {
+    "time": ["2026-09-30T00:00", "2026-09-30T01:00"],
+    "temperature_2m_icon_seamless": [12.1, 11.8],
+    "temperature_2m_gfs_seamless": [12.6, null]
+  }
+}
