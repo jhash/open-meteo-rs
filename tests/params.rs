@@ -37,6 +37,16 @@ fn every_param_round_trips_through_its_api_string() {
 }
 
 #[test]
+fn current_accepts_every_hourly_variable() {
+    for name in HourlyParam::ALL {
+        assert!(
+            CurrentParam::try_from(*name).is_ok(),
+            "{name} is not a current param"
+        );
+    }
+}
+
+#[test]
 fn unknown_names_are_conversion_errors() {
     assert_eq!(
         HourlyParam::try_from("temperature_3m"),

@@ -18,10 +18,12 @@ pub const SEARCH_PATH: &str = "/v1/search";
 pub const DST_FORECAST: &str = include_str!("../fixtures/forecast_auckland_dst.json");
 pub const MINUTELY_FORECAST: &str = include_str!("../fixtures/forecast_minutely_15.json");
 pub const MODELS_FORECAST: &str = include_str!("../fixtures/forecast_models.json");
+pub const EXTRA_FORECAST: &str = include_str!("../fixtures/forecast_extra.json");
 pub const ARCHIVE: &str = include_str!("../fixtures/archive_berlin.json");
 pub const AIR_QUALITY: &str = include_str!("../fixtures/air_quality_berlin.json");
 pub const SEARCH: &str = include_str!("../fixtures/search_auckland.json");
 pub const EMPTY_SEARCH: &str = include_str!("../fixtures/search_empty.json");
+pub const SPARSE_SEARCH: &str = include_str!("../fixtures/search_sparse.json");
 pub const REFUSED: &str = include_str!("../fixtures/refused.json");
 
 pub type Hit = HashMap<String, String>;

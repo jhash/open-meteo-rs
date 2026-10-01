@@ -293,8 +293,8 @@ api_param_enum! {
 api_param_enum! {
     /// Variables for `hourly`, for the forecast and the archive API.
     ///
-    /// Pressure-level variables such as `temperature_850hPa` are not covered; read them
-    /// with [`Series::get_key`].
+    /// Pressure-level variables such as `temperature_850hPa` are not covered; request them
+    /// with [`Options::extra_hourly`] and read them with [`Series::get_key`].
     HourlyParam,
     invalid = InvalidHourlyParam,
     {
@@ -465,25 +465,98 @@ api_param_enum! {
 }
 
 api_param_enum! {
-    /// Variables for `current` conditions.
+    /// Variables for `current` conditions: every hourly variable is also a current one.
+    ///
+    /// Pressure-level variables are not covered; request them with
+    /// [`Options::extra_current`] and read them with [`Current::get_key`].
     CurrentParam,
     invalid = InvalidCurrentParam,
     {
+        Rain => "rain",
         Temperature2m => "temperature_2m",
         RelativeHumidity2m => "relative_humidity_2m",
+        DewPoint2m => "dew_point_2m",
         ApparentTemperature => "apparent_temperature",
-        IsDayOrNight => "is_day",
-        WindSpeed10m => "wind_speed_10m",
-        WindDirection10m => "wind_direction_10m",
-        WindGusts10m => "wind_gusts_10m",
-        Precipitation => "precipitation",
-        Rain => "rain",
-        Showers => "showers",
-        Snowfall => "snowfall",
-        WeatherCode => "weather_code",
-        CloudCover => "cloud_cover",
         PressureMsl => "pressure_msl",
         SurfacePressure => "surface_pressure",
+        CloudCover => "cloud_cover",
+        CloudCoverLow => "cloud_cover_low",
+        CloudCoverMid => "cloud_cover_mid",
+        CloudCoverHigh => "cloud_cover_high",
+        WindSpeed10m => "wind_speed_10m",
+        WindSpeed80m => "wind_speed_80m",
+        WindSpeed100m => "wind_speed_100m",
+        WindSpeed120m => "wind_speed_120m",
+        WindSpeed180m => "wind_speed_180m",
+        WindDirection10m => "wind_direction_10m",
+        WindDirection80m => "wind_direction_80m",
+        WindDirection100m => "wind_direction_100m",
+        WindDirection120m => "wind_direction_120m",
+        WindDirection180m => "wind_direction_180m",
+        WindGusts10m => "wind_gusts_10m",
+        Temperature80m => "temperature_80m",
+        Temperature120m => "temperature_120m",
+        Temperature180m => "temperature_180m",
+        ShortwaveRadiation => "shortwave_radiation",
+        DirectRadiation => "direct_radiation",
+        DirectNormalIrradiance => "direct_normal_irradiance",
+        DiffuseRadiation => "diffuse_radiation",
+        GlobalTiltedIrradiance => "global_tilted_irradiance",
+        TerrestrialRadiation => "terrestrial_radiation",
+        ShortwaveRadiationInstant => "shortwave_radiation_instant",
+        DirectRadiationInstant => "direct_radiation_instant",
+        DirectNormalIrradianceInstant => "direct_normal_irradiance_instant",
+        DiffuseRadiationInstant => "diffuse_radiation_instant",
+        GlobalTiltedIrradianceInstant => "global_tilted_irradiance_instant",
+        TerrestrialRadiationInstant => "terrestrial_radiation_instant",
+        SunshineDuration => "sunshine_duration",
+        VapourPressureDeficit => "vapour_pressure_deficit",
+        Evapotranspiration => "evapotranspiration",
+        Et0FaoEvapotranspiration => "et0_fao_evapotranspiration",
+        WeatherCode => "weather_code",
+        Precipitation => "precipitation",
+        Showers => "showers",
+        Snowfall => "snowfall",
+        PrecipitationProbability => "precipitation_probability",
+        SnowDepth => "snow_depth",
+        SnowDepthWaterEquivalent => "snow_depth_water_equivalent",
+        FreezingLevelHeight => "freezing_level_height",
+        Visibility => "visibility",
+        Cape => "cape",
+        LiftedIndex => "lifted_index",
+        ConvectiveInhibition => "convective_inhibition",
+        BoundaryLayerHeight => "boundary_layer_height",
+        TotalColumnIntegratedWaterVapour => "total_column_integrated_water_vapour",
+        WetBulbTemperature2m => "wet_bulb_temperature_2m",
+        UvIndex => "uv_index",
+        UvIndexClearSky => "uv_index_clear_sky",
+        IsDayOrNight => "is_day",
+        Albedo => "albedo",
+        SoilTemperature0cm => "soil_temperature_0cm",
+        SoilTemperature6cm => "soil_temperature_6cm",
+        SoilTemperature18cm => "soil_temperature_18cm",
+        SoilTemperature54cm => "soil_temperature_54cm",
+        SoilMoisture0To1cm => "soil_moisture_0_to_1cm",
+        SoilMoisture1To3cm => "soil_moisture_1_to_3cm",
+        SoilMoisture3To9cm => "soil_moisture_3_to_9cm",
+        SoilMoisture9To27cm => "soil_moisture_9_to_27cm",
+        SoilMoisture27To81cm => "soil_moisture_27_to_81cm",
+        SoilTemperature0To10cm => "soil_temperature_0_to_10cm",
+        SoilTemperature10To40cm => "soil_temperature_10_to_40cm",
+        SoilTemperature40To100cm => "soil_temperature_40_to_100cm",
+        SoilTemperature100To200cm => "soil_temperature_100_to_200cm",
+        SoilMoisture0To10cm => "soil_moisture_0_to_10cm",
+        SoilMoisture10To40cm => "soil_moisture_10_to_40cm",
+        SoilMoisture40To100cm => "soil_moisture_40_to_100cm",
+        SoilMoisture100To200cm => "soil_moisture_100_to_200cm",
+        SoilTemperature0To7cm => "soil_temperature_0_to_7cm",
+        SoilTemperature7To28cm => "soil_temperature_7_to_28cm",
+        SoilTemperature28To100cm => "soil_temperature_28_to_100cm",
+        SoilTemperature100To255cm => "soil_temperature_100_to_255cm",
+        SoilMoisture0To7cm => "soil_moisture_0_to_7cm",
+        SoilMoisture7To28cm => "soil_moisture_7_to_28cm",
+        SoilMoisture28To100cm => "soil_moisture_28_to_100cm",
+        SoilMoisture100To255cm => "soil_moisture_100_to_255cm",
     }
 }
 
@@ -503,6 +576,14 @@ pub struct Options {
     pub daily: Vec<DailyParam>,
     /// Variables to request for current conditions.
     pub current: Vec<CurrentParam>,
+    /// `minutely_15` variables the typed parameters do not cover, sent after [`Self::minutely_15`].
+    pub extra_minutely_15: Vec<String>,
+    /// `hourly` variables the typed parameters do not cover, sent after [`Self::hourly`].
+    pub extra_hourly: Vec<String>,
+    /// `daily` variables the typed parameters do not cover, sent after [`Self::daily`].
+    pub extra_daily: Vec<String>,
+    /// `current` variables the typed parameters do not cover, sent after [`Self::current`].
+    pub extra_current: Vec<String>,
     pub temperature_unit: Option<TemperatureUnit>,
     pub wind_speed_unit: Option<WindSpeedUnit>,
     pub precipitation_unit: Option<PrecipitationUnit>,
@@ -542,10 +623,15 @@ impl Options {
         self.location.push_to(&mut query);
         query.push(("timeformat", "iso8601".to_owned()));
         push_value(&mut query, "elevation", self.elevation);
-        push_list(&mut query, "current", &self.current);
-        push_list(&mut query, "minutely_15", &self.minutely_15);
-        push_list(&mut query, "hourly", &self.hourly);
-        push_list(&mut query, "daily", &self.daily);
+        push_variables(&mut query, "current", &self.current, &self.extra_current);
+        push_variables(
+            &mut query,
+            "minutely_15",
+            &self.minutely_15,
+            &self.extra_minutely_15,
+        );
+        push_variables(&mut query, "hourly", &self.hourly, &self.extra_hourly);
+        push_variables(&mut query, "daily", &self.daily, &self.extra_daily);
         push_value(&mut query, "temperature_unit", self.temperature_unit);
         push_value(&mut query, "wind_speed_unit", self.wind_speed_unit);
         push_value(&mut query, "precipitation_unit", self.precipitation_unit);
@@ -585,6 +671,20 @@ pub(crate) fn push_list<P: AsRef<str>>(query: &mut Query, name: &'static str, pa
         let joined: Vec<&str> = params.iter().map(AsRef::as_ref).collect();
         query.push((name, joined.join(",")));
     }
+}
+
+pub(crate) fn push_variables<P: AsRef<str>>(
+    query: &mut Query,
+    name: &'static str,
+    typed: &[P],
+    extra: &[String],
+) {
+    let names: Vec<&str> = typed
+        .iter()
+        .map(AsRef::as_ref)
+        .chain(extra.iter().map(String::as_str))
+        .collect();
+    push_list(query, name, &names);
 }
 
 pub(crate) fn push_date(query: &mut Query, name: &'static str, date: Option<Date>) {

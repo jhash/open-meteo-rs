@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "id": 3371122,
+      "name": "Bouvet Island",
+      "latitude": -54.42222,
+      "longitude": 3.35833,
+      "elevation": 576.0,
+      "feature_code": "ISL",
+      "country_code": "BV",
+      "timezone": "Europe/Oslo"
+    },
+    {
+      "id": 3371123,
+      "name": "Bouvet Island",
+      "latitude": -54.43333,
+      "longitude": 3.4,
+      "elevation": null,
+      "country": null,
+      "population": null,
+      "postcodes": null
+    },
+    {
+      "id": 9999999,
+      "name": "Unplaced"
+    }
+  ],
+  "generationtime_ms": 0.13947487
+}

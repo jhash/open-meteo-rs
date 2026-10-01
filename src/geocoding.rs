@@ -1,4 +1,5 @@
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
+use serde_json::Value;
 
 use crate::Error;
 use crate::client::{Client, Query};
@@ -69,7 +70,9 @@ impl Options {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct GeocodingResponse {
     /// Matching places, best first; empty when nothing matches.
-    #[serde(default)]
+    ///
+    /// Places without an id, a name or coordinates are left out.
+    #[serde(default, deserialize_with = "complete_places")]
     pub results: Vec<GeocodingResult>,
     /// Server-side generation time, in milliseconds.
     #[serde(rename = "generationtime_ms")]
@@ -95,7 +98,7 @@ pub struct GeocodingResult {
     /// IANA time zone, for example `Europe/Berlin`.
     pub timezone: Option<String>,
     pub population: Option<i64>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_as_empty")]
     pub postcodes: Vec<String>,
     pub admin1: Option<String>,
     pub admin2: Option<String>,
@@ -105,6 +108,21 @@ pub struct GeocodingResult {
     pub admin2_id: Option<i64>,
     pub admin3_id: Option<i64>,
     pub admin4_id: Option<i64>,
+}
+
+fn complete_places<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<GeocodingResult>, D::Error> {
+    let places: Option<Vec<Value>> = Option::deserialize(deserializer)?;
+    Ok(places
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|place| serde_json::from_value(place).ok())
+        .collect())
+}
+
+fn null_as_empty<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<String>, D::Error> {
+    Ok(Option::deserialize(deserializer)?.unwrap_or_default())
 }
 
 impl Client {
