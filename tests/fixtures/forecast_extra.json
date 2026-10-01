@@ -1,0 +1,29 @@
+{
+  "latitude": 52.52,
+  "longitude": 13.419998,
+  "generationtime_ms": 9.5,
+  "utc_offset_seconds": 7200,
+  "timezone": "Europe/Berlin",
+  "timezone_abbreviation": "GMT+2",
+  "elevation": 38.0,
+  "current_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "temperature_2m": "°C",
+    "temperature_850hPa": "°C"
+  },
+  "current": {
+    "time": "2026-10-01T19:15",
+    "interval": 900,
+    "temperature_2m": 22.5,
+    "temperature_850hPa": 11.5
+  },
+  "hourly_units": {
+    "time": "iso8601",
+    "geopotential_height_500hPa": "m"
+  },
+  "hourly": {
+    "time": ["2026-10-01T00:00", "2026-10-01T01:00"],
+    "geopotential_height_500hPa": [5841.0, 5838.0]
+  }
+}

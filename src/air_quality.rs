@@ -2,7 +2,7 @@ use jiff::Timestamp;
 use jiff::civil::{Date, DateTime};
 
 use crate::client::{Client, Query};
-use crate::forecast::{CellSelection, push_date, push_hour, push_list, push_value};
+use crate::forecast::{CellSelection, push_date, push_hour, push_value, push_variables};
 use crate::response::{self, Current, Meta, Raw, Series};
 use crate::{Error, location};
 
@@ -76,6 +76,10 @@ pub struct Options {
     pub hourly: Vec<AirQualityParam>,
     /// Variables to request for current conditions.
     pub current: Vec<AirQualityParam>,
+    /// `hourly` variables the typed parameters do not cover, sent after [`Self::hourly`].
+    pub extra_hourly: Vec<String>,
+    /// `current` variables the typed parameters do not cover, sent after [`Self::current`].
+    pub extra_current: Vec<String>,
     pub domains: Option<AirQualityDomain>,
     /// IANA time zone for local times, or `auto`; the API default is `GMT`.
     pub time_zone: Option<String>,
@@ -95,8 +99,8 @@ impl Options {
     fn into_query(self) -> Query {
         let mut query = Query::new();
         self.location.push_to(&mut query);
-        push_list(&mut query, "hourly", &self.hourly);
-        push_list(&mut query, "current", &self.current);
+        push_variables(&mut query, "hourly", &self.hourly, &self.extra_hourly);
+        push_variables(&mut query, "current", &self.current, &self.extra_current);
         push_value(&mut query, "domains", self.domains);
         push_value(&mut query, "timezone", self.time_zone);
         push_value(&mut query, "past_days", self.past_days);

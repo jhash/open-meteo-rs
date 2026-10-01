@@ -62,7 +62,7 @@ Variables are requested with the parameter enums (`HourlyParam`, `DailyParam`, `
 - `Series::time()` is `&[jiff::Timestamp]` for `minutely_15` and `hourly`, and `&[jiff::civil::Date]` for `daily`.
 - `Current::get(param)` returns `Option<f64>`, and `Current::time` is a `jiff::Timestamp`.
 - With more than one model in `models`, Open-Meteo suffixes every key with the model name; read those with `get_for_model(param, model)`.
-- Keys the enums do not cover, such as pressure-level variables, are available through `get_key("temperature_850hPa")`.
+- Variables the enums do not cover, such as pressure-level ones or variables newer than this crate, are requested with the `extra_current`, `extra_minutely_15`, `extra_hourly` and `extra_daily` strings (`extra_current` and `extra_hourly` on air quality) and read back with `get_key("temperature_850hPa")`, `instants_key` and `unit_key`.
 
 The enums round-trip through their API strings with `TryFrom<&str>`, `FromStr`, `Display` and `as_str()`.
 
@@ -146,6 +146,8 @@ for place in found.results {
 # Ok(())
 # }
 ```
+
+Every field but `id`, `name`, `latitude` and `longitude` is optional; places missing one of those four are left out, and a search without matches returns no results rather than an error.
 
 ### Custom HTTP client, hosts and API key
 

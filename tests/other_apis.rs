@@ -8,7 +8,7 @@ use open_meteo_rs::jiff::civil::{date, datetime};
 use open_meteo_rs::{Error, Location};
 use support::{
     AIR_QUALITY, AIR_QUALITY_PATH, ARCHIVE, ARCHIVE_PATH, EMPTY_SEARCH, SEARCH, SEARCH_PATH,
-    Upstream, listed,
+    SPARSE_SEARCH, Upstream, listed,
 };
 
 fn at(text: &str) -> Timestamp {
@@ -121,6 +121,27 @@ async fn air_quality_reads_current_and_hourly_values() {
 }
 
 #[tokio::test]
+async fn air_quality_requests_extra_variables_after_the_typed_ones() {
+    let upstream = Upstream::start().await;
+    upstream.reply(AIR_QUALITY_PATH, 200, AIR_QUALITY);
+    let opts = air_quality::Options {
+        hourly: vec![AirQualityParam::Pm10],
+        extra_hourly: vec!["new_pollen".to_owned()],
+        extra_current: vec!["new_index".to_owned()],
+        ..air_quality::Options::default()
+    };
+    upstream
+        .client()
+        .air_quality(opts)
+        .await
+        .expect("the stub air quality converts");
+
+    let hit = upstream.only_hit(AIR_QUALITY_PATH);
+    assert_eq!(listed(&hit, "hourly"), ["pm10", "new_pollen"]);
+    assert_eq!(listed(&hit, "current"), ["new_index"]);
+}
+
+#[tokio::test]
 async fn geocoding_returns_typed_places() {
     let upstream = Upstream::start().await;
     upstream.reply(SEARCH_PATH, 200, SEARCH);
@@ -167,6 +188,50 @@ async fn geocoding_without_results_finds_nothing() {
         .geocoding(geocoding::Options::new("zzqqxx"))
         .await
         .expect("an empty answer is not an error");
+    assert!(found.results.is_empty());
+}
+
+#[tokio::test]
+async fn geocoding_tolerates_sparse_places() {
+    let upstream = Upstream::start().await;
+    upstream.reply(SEARCH_PATH, 200, SPARSE_SEARCH);
+    let found = upstream
+        .client()
+        .geocoding(geocoding::Options::new("Bouvet"))
+        .await
+        .expect("sparse places are not an error");
+
+    assert_eq!(
+        found.results.len(),
+        2,
+        "a place without coordinates is skipped"
+    );
+    let island = &found.results[0];
+    assert_eq!(island.name, "Bouvet Island");
+    assert_eq!(island.country_code.as_deref(), Some("BV"));
+    assert_eq!(
+        (island.admin1.as_deref(), island.country.as_deref()),
+        (None, None)
+    );
+    assert_eq!(island.population, None);
+    let bare = &found.results[1];
+    assert_eq!((bare.elevation, bare.timezone.as_deref()), (None, None));
+    assert!(bare.postcodes.is_empty(), "null postcodes read as none");
+}
+
+#[tokio::test]
+async fn geocoding_with_null_results_finds_nothing() {
+    let upstream = Upstream::start().await;
+    upstream.reply(
+        SEARCH_PATH,
+        200,
+        r#"{"results":null,"generationtime_ms":0.4}"#,
+    );
+    let found = upstream
+        .client()
+        .geocoding(geocoding::Options::new("zzqqxx"))
+        .await
+        .expect("null results are not an error");
     assert!(found.results.is_empty());
 }
 

@@ -7,7 +7,10 @@ use open_meteo_rs::forecast::{
 use open_meteo_rs::jiff::Timestamp;
 use open_meteo_rs::jiff::civil::{date, datetime};
 use open_meteo_rs::{Client, Error, Location};
-use support::{DST_FORECAST, FORECAST_PATH, MINUTELY_FORECAST, MODELS_FORECAST, Upstream, listed};
+use support::{
+    DST_FORECAST, EXTRA_FORECAST, FORECAST_PATH, MINUTELY_FORECAST, MODELS_FORECAST, Upstream,
+    listed,
+};
 
 const NZST: i32 = 12 * 3600;
 
@@ -306,6 +309,44 @@ async fn several_models_are_read_by_model() {
     assert_eq!(
         hourly.unit_for_model(HourlyParam::Temperature2m, Model::GfsSeamless),
         Some("°C")
+    );
+}
+
+#[tokio::test]
+async fn extra_variables_are_requested_after_the_typed_ones_and_read_by_key() {
+    let upstream = Upstream::start().await;
+    upstream.reply(FORECAST_PATH, 200, EXTRA_FORECAST);
+    let opts = Options {
+        current: vec![CurrentParam::Temperature2m],
+        extra_current: vec!["temperature_850hPa".to_owned()],
+        extra_minutely_15: vec!["new_quarter_hour_variable".to_owned()],
+        extra_hourly: vec!["geopotential_height_500hPa".to_owned()],
+        extra_daily: vec!["new_daily_variable".to_owned()],
+        ..Options::default()
+    };
+    let result = upstream
+        .client()
+        .forecast(opts)
+        .await
+        .expect("the stub forecast converts");
+
+    let hit = upstream.only_hit(FORECAST_PATH);
+    assert_eq!(
+        listed(&hit, "current"),
+        ["temperature_2m", "temperature_850hPa"]
+    );
+    assert_eq!(listed(&hit, "minutely_15"), ["new_quarter_hour_variable"]);
+    assert_eq!(listed(&hit, "hourly"), ["geopotential_height_500hPa"]);
+    assert_eq!(listed(&hit, "daily"), ["new_daily_variable"]);
+
+    let current = result.current.expect("current values");
+    assert_eq!(current.get(CurrentParam::Temperature2m), Some(22.5));
+    assert_eq!(current.get_key("temperature_850hPa"), Some(11.5));
+    assert_eq!(current.unit_key("temperature_850hPa"), Some("°C"));
+    let hourly = result.hourly.expect("hourly values");
+    assert_eq!(
+        hourly.get_key("geopotential_height_500hPa"),
+        Some(&[Some(5841.0), Some(5838.0)][..])
     );
 }
 
