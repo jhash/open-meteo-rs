@@ -7,11 +7,14 @@ on:
 jobs:
   checks:
     runs-on: open-meteo-rs-amd64
+    env:
+      USER: runner
 
     steps:
       - uses: actions/checkout@v6
       - uses: nixbuild/nix-quick-install-action@v34
         with:
+          enable_kvm: false
           nix_conf: |
             sandbox = false
 
