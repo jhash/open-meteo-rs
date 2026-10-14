@@ -7,11 +7,16 @@ on:
 jobs:
   checks:
     runs-on: open-meteo-rs-amd64
+    env:
+      USER: runner
 
     steps:
       - uses: actions/checkout@v6
+      - name: Install the archive tools nix-quick-install unpacks with
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends zstd xz-utils
       - uses: nixbuild/nix-quick-install-action@v34
         with:
+          enable_kvm: false
           nix_conf: |
             sandbox = false
 
